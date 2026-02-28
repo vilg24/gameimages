@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gods battle</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <h1>gods battle</h1>
+
+    <section class="arena">
+      <article class="card enemy side-card">
+        <header>
+          <h2 id="enemy-name">Lightning Kid</h2>
+          <span id="enemy-hp-label">HP 100/100</span>
+        </header>
+        <p class="pilot-label">Player 2</p>
+        <div id="enemy-creature" class="creature charizard-like" aria-hidden="true">
+          <span class="creature-core">🔥🐲💀🪽</span>
+        </div>
+        <div class="hp-track"><div id="enemy-hp" class="hp-fill"></div></div>
+        <section class="side-log-wrap">
+          <h3 id="enemy-log-title">Lightning Kid Log</h3>
+          <ul id="enemy-log" class="battle-log"></ul>
+        </section>
+      </article>
+
+      <div class="versus" aria-hidden="true">VS</div>
+
+      <article class="card player side-card">
+        <header>
+          <h2 id="player-name">Super Dad</h2>
+          <span id="player-hp-label">HP 100/100</span>
+        </header>
+        <p class="pilot-label">Player 1</p>
+        <div id="player-creature" class="creature pikachu-like" aria-hidden="true">
+          <span class="creature-core">⚡🐭💀🪽</span>
+        </div>
+        <div class="hp-track"><div id="player-hp" class="hp-fill"></div></div>
+        <section class="side-log-wrap">
+          <h3 id="player-log-title">Super Dad Log</h3>
+          <ul id="player-log" class="battle-log"></ul>
+        </section>
+      </article>
+    </section>
+
+    <section class="controls">
+      <p id="message">Choose an attack to start the battle.</p>
+      <div id="attacks" class="attacks"></div>
+      <button id="restart" type="button" hidden>New Battle</button>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
