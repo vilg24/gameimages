@@ -7,7 +7,7 @@ import random
 from pathlib import Path
 from typing import Dict, List
 
-from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
 CANVAS = 512
 FRAME_COUNT = 10
@@ -50,7 +50,7 @@ def draw_lightning_overlay(frame_idx: int, rng: random.Random) -> Image.Image:
     draw = ImageDraw.Draw(overlay)
 
     impact_core = 1.0 - min(1.0, abs(frame_idx - 5) / 5.0)
-    branch_count = 4 + int(impact_core * 7)
+    branch_count = 7 + int(impact_core * 14)
     glow_alpha = int(65 + 160 * impact_core)
     bolt_alpha = int(90 + 160 * impact_core)
 
@@ -62,39 +62,39 @@ def draw_lightning_overlay(frame_idx: int, rng: random.Random) -> Image.Image:
         x = cx + rng.randint(-45, 45)
         y = top + rng.randint(-8, 8)
         pts = [(x, y)]
-        step_count = 8 + rng.randint(0, 4)
+        step_count = 9 + rng.randint(0, 6)
         for i in range(1, step_count):
             t = i / step_count
-            px = cx + int(math.sin(t * 9 + rng.random() * 4) * (18 + 26 * impact_core)) + rng.randint(-8, 8)
+            px = cx + int(math.sin(t * 11 + rng.random() * 7) * (24 + 38 * impact_core)) + rng.randint(-14, 14)
             py = int(top + t * (bottom - top)) + rng.randint(-10, 10)
             pts.append((px, py))
-        pts.append((cx + rng.randint(-22, 22), bottom + rng.randint(-8, 8)))
+        pts.append((cx + rng.randint(-36, 36), bottom + rng.randint(-14, 14)))
 
-        width = max(1, int(2 + 6 * impact_core - rng.random() * 2))
-        draw.line(pts, fill=(200, 230, 255, glow_alpha), width=width + 6)
+        width = max(1, int(2 + 9 * impact_core - rng.random() * 2))
+        draw.line(pts, fill=(200, 230, 255, glow_alpha), width=width + 11)
         draw.line(pts, fill=(240, 250, 255, bolt_alpha), width=width)
 
-    if 4 <= frame_idx <= 6:
+    if 3 <= frame_idx <= 6:
         flash = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
         fdraw = ImageDraw.Draw(flash)
-        radius = 90 + (6 - abs(frame_idx - 5)) * 30
+        radius = 130 + (6 - abs(frame_idx - 5)) * 42
         fdraw.ellipse(
             (cx - radius, CANVAS // 2 - radius, cx + radius, CANVAS // 2 + radius),
-            fill=(220, 240, 255, 130),
+            fill=(220, 240, 255, 190),
         )
-        flash = flash.filter(ImageFilter.GaussianBlur(12))
+        flash = flash.filter(ImageFilter.GaussianBlur(18))
         overlay = Image.alpha_composite(overlay, flash)
 
-    if frame_idx >= 6:
+    if frame_idx >= 5:
         sparks = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
         sdraw = ImageDraw.Draw(sparks)
-        for _ in range(55 - frame_idx * 4):
+        for _ in range(max(8, 95 - frame_idx * 9)):
             sx = cx + rng.randint(-130, 130)
             sy = CANVAS // 2 + rng.randint(-120, 120)
-            sr = rng.randint(1, 3)
-            sa = rng.randint(55, 170)
+            sr = rng.randint(1, 5)
+            sa = rng.randint(55, 190)
             sdraw.ellipse((sx - sr, sy - sr, sx + sr, sy + sr), fill=(195, 230, 255, sa))
-        sparks = sparks.filter(ImageFilter.GaussianBlur(1.5))
+        sparks = sparks.filter(ImageFilter.GaussianBlur(2.2))
         overlay = Image.alpha_composite(overlay, sparks)
 
     return overlay
@@ -102,35 +102,36 @@ def draw_lightning_overlay(frame_idx: int, rng: random.Random) -> Image.Image:
 
 def render_lightning_frames(src: Image.Image) -> List[Image.Image]:
     frames: List[Image.Image] = []
-    base = fit_source(src, 300, 300)
+    base = fit_source(src, 330, 330)
 
     for i in range(FRAME_COUNT):
         rng = random.Random(SEED + 101 + i)
         frame = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
 
-        cast = min(1.0, i / 3.0)
-        strike = max(0.0, 1.0 - abs(i - 5) / 4.0)
-        dissipate = max(0.0, (i - 6) / 4.0)
+        cast = min(1.0, i / 2.0)
+        strike = max(0.0, 1.0 - abs(i - 5) / 2.9)
+        dissipate = max(0.0, (i - 5) / 4.0)
 
-        scale = 0.84 + cast * 0.12 + strike * 0.18 - dissipate * 0.12
-        jitter_x = rng.randint(-3, 3) + int(math.sin(i * 1.4) * (2 + 6 * strike))
-        jitter_y = rng.randint(-3, 3) + int(math.cos(i * 1.1) * (2 + 5 * strike))
+        scale = 0.62 + cast * 0.22 + strike * 0.4 - dissipate * 0.18
+        jitter_x = rng.randint(-5, 5) + int(math.sin(i * 2.3) * (4 + 16 * strike))
+        jitter_y = rng.randint(-5, 5) + int(math.cos(i * 1.9) * (4 + 14 * strike))
 
         cur = base.resize(
             (max(1, int(base.width * scale)), max(1, int(base.height * scale))),
             Image.Resampling.LANCZOS,
         )
 
-        brighten = ImageEnhance.Brightness(cur).enhance(0.9 + strike * 0.65 + cast * 0.25)
-        glow = brighten.filter(ImageFilter.GaussianBlur(9 + int(10 * strike)))
-        glow_alpha = int(70 + 120 * strike + 50 * cast - 60 * dissipate)
+        brighten = ImageEnhance.Brightness(cur).enhance(0.72 + strike * 1.0 + cast * 0.35)
+        brighten = ImageEnhance.Color(brighten).enhance(1.05 + strike * 0.45)
+        glow = brighten.filter(ImageFilter.GaussianBlur(14 + int(14 * strike)))
+        glow_alpha = int(45 + 170 * strike + 85 * cast - 80 * dissipate)
         glow.putalpha(glow.split()[3].point(lambda a: max(0, min(255, (a * glow_alpha) // 255))))
 
         gx = (CANVAS - glow.width) // 2 + jitter_x
         gy = (CANVAS - glow.height) // 2 + jitter_y
         alpha_safe_paste(frame, glow, gx, gy)
 
-        cur_alpha = int(145 + 90 * cast + 20 * strike - 50 * dissipate)
+        cur_alpha = int(85 + 135 * cast + 45 * strike - 85 * dissipate)
         cur = brighten.copy()
         cur.putalpha(cur.split()[3].point(lambda a: max(0, min(255, (a * cur_alpha) // 255))))
         cx = (CANVAS - cur.width) // 2 + jitter_x
@@ -139,6 +140,25 @@ def render_lightning_frames(src: Image.Image) -> List[Image.Image]:
 
         overlay = draw_lightning_overlay(i, rng)
         frame = Image.alpha_composite(frame, overlay)
+
+        if 4 <= i <= 6:
+            impact_cross = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
+            idraw = ImageDraw.Draw(impact_cross)
+            strength = 1.0 - abs(i - 5) / 1.8
+            span = int(140 + 120 * strength)
+            width = int(8 + 12 * strength)
+            idraw.line(
+                [(CANVAS // 2 - span, CANVAS // 2), (CANVAS // 2 + span, CANVAS // 2)],
+                fill=(230, 245, 255, int(80 + 120 * strength)),
+                width=width,
+            )
+            idraw.line(
+                [(CANVAS // 2, CANVAS // 2 - span), (CANVAS // 2, CANVAS // 2 + span)],
+                fill=(230, 245, 255, int(80 + 120 * strength)),
+                width=width,
+            )
+            impact_cross = impact_cross.filter(ImageFilter.GaussianBlur(7))
+            frame = Image.alpha_composite(frame, impact_cross)
 
         frames.append(frame)
 
@@ -165,14 +185,15 @@ def draw_flame_trail(frame: Image.Image, frame_idx: int, sweep_t: float, rng: ra
     end = math.radians(330 - 130 * sweep_t)
 
     for band, col in [
-        (20, (255, 120, 25, 135)),
-        (12, (255, 175, 45, 170)),
-        (6, (255, 228, 95, 210)),
+        (38, (255, 90, 16, 130)),
+        (24, (255, 130, 24, 180)),
+        (14, (255, 190, 45, 220)),
+        (7, (255, 235, 130, 230)),
     ]:
-        pts = curved_arc_points(cx, cy, 140 + band // 2, start, end, 18)
+        pts = curved_arc_points(cx, cy, 138 + band // 2, start, end, 26)
         draw.line(pts, fill=col, width=band)
 
-    ember_count = 18 + int(40 * max(0.0, 1.0 - abs(frame_idx - 5) / 5.0))
+    ember_count = 34 + int(62 * max(0.0, 1.0 - abs(frame_idx - 5) / 5.0))
     for _ in range(ember_count):
         ex = cx + rng.randint(-130, 130)
         ey = cy + rng.randint(-80, 120)
@@ -180,29 +201,29 @@ def draw_flame_trail(frame: Image.Image, frame_idx: int, sweep_t: float, rng: ra
         a = rng.randint(70, 200)
         draw.ellipse((ex - r, ey - r, ex + r, ey + r), fill=(255, rng.randint(120, 220), 40, a))
 
-    trail = trail.filter(ImageFilter.GaussianBlur(2.8))
+    trail = trail.filter(ImageFilter.GaussianBlur(4.2))
     frame.alpha_composite(trail)
 
 
 def render_flaming_frames(src: Image.Image) -> List[Image.Image]:
     frames: List[Image.Image] = []
-    base = fit_source(src, 340, 340)
+    base = fit_source(src, 360, 360)
 
     for i in range(FRAME_COUNT):
         rng = random.Random(SEED + 303 + i)
         frame = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
 
         t = i / (FRAME_COUNT - 1)
-        windup = max(0.0, 1.0 - (t / 0.32)) if t < 0.32 else 0.0
+        windup = max(0.0, 1.0 - (t / 0.28)) if t < 0.28 else 0.0
         slash = 0.0
-        if 0.22 <= t <= 0.78:
-            slash = (t - 0.22) / (0.56)
-        ember = max(0.0, (t - 0.58) / 0.42)
+        if 0.2 <= t <= 0.76:
+            slash = (t - 0.2) / 0.56
+        ember = max(0.0, (t - 0.5) / 0.5)
 
-        angle = -38 * windup + (145 * slash)
-        tx = int(-56 * windup + 80 * slash)
-        ty = int(34 * windup - 42 * slash + 24 * ember)
-        scale = 0.9 + 0.16 * slash
+        angle = -74 * windup + (220 * slash)
+        tx = int(-84 * windup + 118 * slash)
+        ty = int(44 * windup - 62 * slash + 34 * ember)
+        scale = 0.82 + 0.27 * slash
 
         cur = base.resize(
             (max(1, int(base.width * scale)), max(1, int(base.height * scale))),
@@ -210,8 +231,9 @@ def render_flaming_frames(src: Image.Image) -> List[Image.Image]:
         )
         cur = cur.rotate(angle, expand=True, resample=Image.Resampling.BICUBIC)
 
-        brightness = 0.95 + 0.85 * max(0.0, 1.0 - abs(i - 5) / 5.0)
+        brightness = 0.8 + 1.05 * max(0.0, 1.0 - abs(i - 5) / 4.0)
         cur = ImageEnhance.Brightness(cur).enhance(brightness)
+        cur = ImageEnhance.Color(cur).enhance(1.2)
 
         if slash > 0.05:
             draw_flame_trail(frame, i, slash, rng)
@@ -219,20 +241,23 @@ def render_flaming_frames(src: Image.Image) -> List[Image.Image]:
         if ember > 0:
             smoke = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
             sdraw = ImageDraw.Draw(smoke)
-            for _ in range(16 + int(ember * 20)):
+            for _ in range(26 + int(ember * 40)):
                 sx = CANVAS // 2 + rng.randint(-90, 130)
                 sy = CANVAS // 2 + rng.randint(-70, 110)
                 sr = rng.randint(7, 18)
                 sa = int(25 + 60 * (1.0 - ember) + rng.randint(0, 35))
                 sdraw.ellipse((sx - sr, sy - sr, sx + sr, sy + sr), fill=(80, 80, 85, sa))
-            smoke = smoke.filter(ImageFilter.GaussianBlur(6.0))
+            smoke = smoke.filter(ImageFilter.GaussianBlur(8.5))
             frame.alpha_composite(smoke)
 
-        glow = cur.filter(ImageFilter.GaussianBlur(8))
-        glow.putalpha(glow.split()[3].point(lambda a: max(0, min(255, (a * 145) // 255))))
+        motion_smear = cur.filter(ImageFilter.GaussianBlur(4.2))
+        motion_smear = ImageEnhance.Brightness(motion_smear).enhance(1.12)
+        glow = cur.filter(ImageFilter.GaussianBlur(12))
+        glow.putalpha(glow.split()[3].point(lambda a: max(0, min(255, (a * 180) // 255))))
 
         x = (CANVAS - cur.width) // 2 + tx
         y = (CANVAS - cur.height) // 2 + ty
+        alpha_safe_paste(frame, motion_smear, x - int(20 * slash), y + int(12 * slash))
         alpha_safe_paste(frame, glow, (CANVAS - glow.width) // 2 + tx, (CANVAS - glow.height) // 2 + ty)
         alpha_safe_paste(frame, cur, x, y)
 
