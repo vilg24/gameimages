@@ -1,0 +1,119 @@
+{
+  "name": "lightning_attack",
+  "fps": 12,
+  "frame_size": [
+    512,
+    512
+  ],
+  "frames": [
+    {
+      "file": "frames/lightning_attack_000.png",
+      "index": 0,
+      "rect": [
+        0,
+        0,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_001.png",
+      "index": 1,
+      "rect": [
+        512,
+        0,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_002.png",
+      "index": 2,
+      "rect": [
+        1024,
+        0,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_003.png",
+      "index": 3,
+      "rect": [
+        1536,
+        0,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_004.png",
+      "index": 4,
+      "rect": [
+        2048,
+        0,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_005.png",
+      "index": 5,
+      "rect": [
+        0,
+        512,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_006.png",
+      "index": 6,
+      "rect": [
+        512,
+        512,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_007.png",
+      "index": 7,
+      "rect": [
+        1024,
+        512,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_008.png",
+      "index": 8,
+      "rect": [
+        1536,
+        512,
+        512,
+        512
+      ]
+    },
+    {
+      "file": "frames/lightning_attack_009.png",
+      "index": 9,
+      "rect": [
+        2048,
+        512,
+        512,
+        512
+      ]
+    }
+  ],
+  "sheet": {
+    "file": "spritesheet/lightning_attack_sheet.png",
+    "cols": 5,
+    "rows": 2
+  },
+  "pivot": [
+    0.5,
+    0.5
+  ]
+}
