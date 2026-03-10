@@ -9,47 +9,109 @@
 <body>
   <main class="game-shell">
     <h1>gods battle</h1>
-
-    <section class="arena">
-      <article class="card enemy side-card">
-        <header>
-          <h2 id="enemy-name">Lightning Kid</h2>
-          <span id="enemy-hp-label">HP 100/100</span>
-        </header>
-        <p class="pilot-label">Player 2</p>
-        <div id="enemy-creature" class="creature charizard-like" aria-hidden="true">
-          <span class="creature-core">🔥🐲💀🪽</span>
-        </div>
-        <div class="hp-track"><div id="enemy-hp" class="hp-fill"></div></div>
-        <section class="side-log-wrap">
-          <h3 id="enemy-log-title">Lightning Kid Log</h3>
-          <ul id="enemy-log" class="battle-log"></ul>
+    <section id="setup-flow" class="setup-flow">
+      <section id="setup-mode-page" class="setup-page">
+        <h2>1. Choose Mode</h2>
+        <section class="mode-select" aria-label="Game mode">
+          <button id="mode-pvp" type="button" class="mode-btn active">2 Players</button>
+          <button id="mode-cpu" type="button" class="mode-btn">Vs Computer</button>
         </section>
-      </article>
+      </section>
 
-      <div class="versus" aria-hidden="true">VS</div>
-
-      <article class="card player side-card">
-        <header>
-          <h2 id="player-name">Super Dad</h2>
-          <span id="player-hp-label">HP 100/100</span>
-        </header>
-        <p class="pilot-label">Player 1</p>
-        <div id="player-creature" class="creature pikachu-like" aria-hidden="true">
-          <span class="creature-core">⚡🐭💀🪽</span>
-        </div>
-        <div class="hp-track"><div id="player-hp" class="hp-fill"></div></div>
-        <section class="side-log-wrap">
-          <h3 id="player-log-title">Super Dad Log</h3>
-          <ul id="player-log" class="battle-log"></ul>
+      <section id="setup-character-page" class="setup-page" hidden>
+        <h2 id="setup-character-title">2. Choose Your Character</h2>
+        <p id="setup-character-instruction" class="setup-character-instruction">Player 1: choose your character.</p>
+        <section id="cpu-character-select" class="cpu-character-select">
+          <button id="choose-character-galaxybro" type="button" class="character-pick" aria-label="Choose Galaxy Bro">
+            <img src="./assets/characters/galaxybro.png" alt="Galaxy Bro" />
+            <span>Galaxy Bro</span>
+          </button>
+          <button id="choose-character-lightningkid" type="button" class="character-pick" aria-label="Choose Lightning Kid">
+            <img src="./assets/lightning_boy_512.png" alt="Lightning Kid" />
+            <span>Lightning Kid</span>
+          </button>
+          <button id="choose-character-superdad" type="button" class="character-pick" aria-label="Choose Super Dad">
+            <img src="./assets/father_fire_sword_512.png" alt="Super Dad" />
+            <span>Super Dad</span>
+          </button>
+          <button id="choose-character-starsha" type="button" class="character-pick" aria-label="Choose Starsha">
+            <img src="./assets/characters/waterwoman.png" alt="Starsha" />
+            <span>Starsha</span>
+          </button>
+          <button id="choose-character-soccerholden" type="button" class="character-pick" aria-label="Choose Soccer Holden">
+            <img src="./assets/characters/soccerplayer.png" alt="Soccer Holden" />
+            <span>Soccer Holden</span>
+          </button>
+          <button id="choose-character-eliashacker" type="button" class="character-pick" aria-label="Choose Elias the Hacker">
+            <img src="./assets/characters/elias_the_hacker.png" alt="Elias the Hacker" />
+            <span>Elias the Hacker</span>
+          </button>
         </section>
-      </article>
+      </section>
+
+      <section id="setup-start-page" class="setup-page" hidden>
+        <h2>3. Start Battle</h2>
+        <p id="setup-summary" class="setup-summary">Ready to begin.</p>
+        <button id="start-game" type="button" class="mode-btn start-btn">Start Game</button>
+      </section>
     </section>
 
-    <section class="controls">
-      <p id="message">Choose an attack to start the battle.</p>
-      <div id="attacks" class="attacks"></div>
-      <button id="restart" type="button" hidden>New Battle</button>
+    <section id="game-stage" hidden>
+      <div id="battle-callout" class="battle-callout" aria-live="assertive" aria-atomic="true"></div>
+      <p id="turn-indicator" class="turn-indicator" aria-live="polite">Turn: Player 1</p>
+      <p id="ribbon-log" class="ribbon-log" aria-live="polite">A new battle starts.</p>
+
+      <section class="arena">
+        <article id="enemy-card" class="card enemy side-card">
+          <header>
+            <h2 id="enemy-name">Lightning Kid</h2>
+            <span id="enemy-hp-label">HP 100/100</span>
+          </header>
+          <div class="hp-track hp-track-top"><div id="enemy-hp" class="hp-fill"></div></div>
+          <div class="super-row">
+            <span id="enemy-super-label" class="super-label">SP 0/100</span>
+            <div class="super-track"><div id="enemy-super" class="super-fill"></div></div>
+            <span id="enemy-special-ready" class="special-ready" hidden>Special Attack</span>
+          </div>
+          <p id="enemy-pilot" class="pilot-label">Player 2</p>
+          <div id="enemy-creature" class="creature charizard-like" aria-hidden="true">
+            <span class="creature-core">🔥🐲💀🪽</span>
+          </div>
+          <section class="side-log-wrap">
+            <h3 id="enemy-log-title">Lightning Kid Log</h3>
+            <ul id="enemy-log" class="battle-log"></ul>
+          </section>
+        </article>
+
+        <div class="versus" aria-hidden="true">VS</div>
+
+        <article id="player-card" class="card player side-card">
+          <header>
+            <h2 id="player-name">Galaxy Bro</h2>
+            <span id="player-hp-label">HP 100/100</span>
+          </header>
+          <div class="hp-track hp-track-top"><div id="player-hp" class="hp-fill"></div></div>
+          <div class="super-row">
+            <span id="player-super-label" class="super-label">SP 0/100</span>
+            <div class="super-track"><div id="player-super" class="super-fill"></div></div>
+            <span id="player-special-ready" class="special-ready" hidden>Special Attack</span>
+          </div>
+          <p id="player-pilot" class="pilot-label">Player 1</p>
+          <div id="player-creature" class="creature pikachu-like" aria-hidden="true">
+            <span class="creature-core">⚡🐭💀🪽</span>
+          </div>
+          <section class="side-log-wrap">
+            <h3 id="player-log-title">Galaxy Bro Log</h3>
+            <ul id="player-log" class="battle-log"></ul>
+          </section>
+        </article>
+      </section>
+
+      <section class="controls">
+        <p id="message">Choose an attack to start the battle.</p>
+        <div id="attacks" class="attacks"></div>
+        <button id="restart" type="button" hidden>New Battle</button>
+      </section>
     </section>
   </main>
 
